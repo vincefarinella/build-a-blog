@@ -14,11 +14,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import os
 import webapp2
+import jinja2
+
+from google.appengine.ext import db
+
+template_dir = os.path.join(os.path.dirname(__file__), "templates")
+jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
+                                autoescape = True)
+
+class blog(db.Model):
+    title = db.StringProperty(required = True)
+    NewPost = db.TextProperty(required = True)
+    created = db.DateTimeProperty(auto_now_add = True)
+
+
 
 class MainHandler(webapp2.RequestHandler):
+
     def get(self):
-        self.response.write('Hello world!')
+        t = jinja_env.get_template("main_blog.html")
+        response = t.render()
+        self.response.write(response)
+
+    def post(self):
+        title = self.request.get("title")
+        NewPost = self.request.get("NewPost")
+
+        if title and NewPost:
+            a = blog(title=title, NewPost=NewPost)
+            a.put()
+            NewPosts = db.GqlQuery("SELECT * FROM NewPosts ORDER BY created DESC")
+
+            t = jinja_env.get_template("new_post.html")
+            response = t.render()
+            self.response.write(response)
+
+        else:
+            error = "you need a title and a new post"
+            t = jinja_env.get_template("main_blog.html")
+            response = t.render(title =title, NewPost=NewPost,
+                                error = error)
+            self.response.write(response)
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler)
