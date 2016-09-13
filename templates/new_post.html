@@ -10,4 +10,16 @@
     <h1> thanks for the new post </h1>
   </body>
 
+  <hr>
+
+  {% for NewPost in NewPosts %}
+
+  <div class="NewPost">
+    <div class="new-post-title">{{NewPost.title}}</div>
+    <pre class="new-post-body">{{NewPost.NewPost}}</pre>
+  </div>
+
+  {% endfor %}
+  
+
 </html>

@@ -45,10 +45,10 @@ class MainHandler(webapp2.RequestHandler):
         if title and NewPost:
             a = blog(title=title, NewPost=NewPost)
             a.put()
-            NewPosts = db.GqlQuery("SELECT * FROM NewPosts ORDER BY created DESC")
+            NewPosts = db.GqlQuery("SELECT * FROM blog ORDER BY created DESC")
 
             t = jinja_env.get_template("new_post.html")
-            response = t.render()
+            response = t.render(title =title, NewPosts=NewPosts)
             self.response.write(response)
 
         else:
