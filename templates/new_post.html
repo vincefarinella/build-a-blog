@@ -1,7 +1,9 @@
 <!DOCTYPE html>
+{% extends "main_blog.html" %}
 
 <html>
 
+{% block content %}
   <head>
     <title> new post</title>
   </head>
@@ -15,11 +17,12 @@
   {% for NewPost in NewPosts %}
 
   <div class="NewPost">
-    <div class="new-post-title">{{NewPost.title}}</div>
-    <pre class="new-post-body">{{NewPost.NewPost}}</pre>
+    <a href = "/blog/{{NewPost.key().id()}}"> {{NewPost.title}} </a>
+    <p>{{NewPost.NewPost}}</p>
   </div>
 
   {% endfor %}
-  
+
+{% endblock %}
 
 </html>

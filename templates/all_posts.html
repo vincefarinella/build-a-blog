@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+
+<html>
+<body>
+  <p> <a href = "/"> Add Entry </a>  <a href = "/blog"> View Posts </a> </p>
+
+
+  {% for NewPost in NewPosts %}
+
+
+    <a href = "/blog/{{NewPost.key().id()}}"> {{NewPost.title}} </a>
+    <p>{{NewPost.NewPost}}</p>
+
+
+  {% endfor %}
+
+
+
+</body>
+</html>

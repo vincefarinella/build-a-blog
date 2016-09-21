@@ -24,7 +24,7 @@ template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                                 autoescape = True)
 
-class blog(db.Model):
+class Post(db.Model):
     title = db.StringProperty(required = True)
     NewPost = db.TextProperty(required = True)
     created = db.DateTimeProperty(auto_now_add = True)
@@ -43,12 +43,12 @@ class MainHandler(webapp2.RequestHandler):
         NewPost = self.request.get("NewPost")
 
         if title and NewPost:
-            a = blog(title=title, NewPost=NewPost)
+            a = Post(title=title, NewPost=NewPost)
             a.put()
-            NewPosts = db.GqlQuery("SELECT * FROM blog ORDER BY created DESC")
+            NewPosts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC LIMIT 5")
 
             t = jinja_env.get_template("new_post.html")
-            response = t.render(title =title, NewPosts=NewPosts)
+            response = t.render(title=title, NewPost=NewPost, NewPosts=NewPosts)
             self.response.write(response)
 
         else:
@@ -58,6 +58,30 @@ class MainHandler(webapp2.RequestHandler):
                                 error = error)
             self.response.write(response)
 
+class ViewPostHandler(webapp2.RequestHandler):
+    def get(self, id):
+        post = Post.get_by_id(int(id))
+
+
+        t = jinja_env.get_template("indiv_post.html")
+        response = t.render( NewPost=post)
+        self.response.write(response)
+
+class BlogPosts(webapp2.RequestHandler):
+    def get(self):
+        # post = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC LIMIT 5")
+        # t = jinja_env.get_template("all_posts.html")
+        # response = t.render(NewPost=post)
+        # self.response.out.write(response)
+
+        NewPosts = db.GqlQuery("SELECT * FROM Post ORDER BY created DESC LIMIT 5")
+
+        t = jinja_env.get_template("all_posts.html")
+        response = t.render( NewPosts=NewPosts)
+        self.response.write(response)
+
 app = webapp2.WSGIApplication([
-    ('/', MainHandler)
+    ('/', MainHandler),
+    ('/blog', BlogPosts),
+    webapp2.Route('/blog/<id:\d+>', ViewPostHandler),
 ], debug=True)
